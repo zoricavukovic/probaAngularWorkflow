@@ -38,6 +38,9 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+      - name: Check if cache hit
+        run: |
+          echo "Cache hit: ${{ steps.cache-npm.outputs.cache-hit }}"
         
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: List the state of node modules
