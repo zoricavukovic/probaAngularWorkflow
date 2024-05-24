@@ -44,9 +44,6 @@ jobs:
         continue-on-error: true
         run: npm list
 
-      - name: List Directory Contents
-        run: ls -al frontend
-
       - name: Install dependencies
         working-directory: frontend
         run: npm install
