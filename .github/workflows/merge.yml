@@ -79,6 +79,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: false
+        MAJOR_STRING_TOKEN: breaking-change
         MINOR_STRING_TOKEN: feat
         PATCH_STRING_TOKEN: fix
 
@@ -115,7 +116,7 @@ jobs:
         id: push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./frontend/Dockerfile
+          context: ./frontend
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:latest
