@@ -1,6 +1,6 @@
 module github.com/mmmajder/zms-devops-auth-service
 
-go 1.17
+go 1.20
 
 require (
 	github.com/go-mail/mail v2.3.1+incompatible
