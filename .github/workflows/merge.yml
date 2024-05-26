@@ -117,6 +117,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
-          file: ./Dockerfile
+          file: ./frontend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:latest
