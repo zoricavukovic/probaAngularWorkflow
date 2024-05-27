@@ -24,6 +24,8 @@ jobs:
        with:
         go-version-file: 'auth-service/go.mod'
         check-latest: true
+        cache-dependency-path: |
+          auth-service/go.mod
   
      - uses: actions/cache@v4
        with:
