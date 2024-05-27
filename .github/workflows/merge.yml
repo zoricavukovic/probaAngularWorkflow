@@ -66,11 +66,11 @@ jobs:
           projectBaseDir: auth-service
           args: >
             -Dsonar.organization=zoricavukovic
-            -Dsonar.projectKey=zoricavukovic/probaAngularWorkflow
+            -Dsonar.projectKey=zoricavukovic_probaAngularWorkflow
             -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.sources=/
-            -Dsonar.test.exclusions=tests/**
-            -Dsonar.tests=tests/
+            -Dsonar.sources=./auth-service
+            -Dsonar.test.exclusions=**/tests/**
+            -Dsonar.tests=./auth-service/tests/
             -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
