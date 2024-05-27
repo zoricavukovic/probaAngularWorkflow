@@ -1,58 +1,50 @@
-name: "Pull Request - Angular"
-
+name: "Pull Request - Auth service"
 on:
-  workflow_dispatch:
-  pull_request:
-    types: [opened, reopened, synchronize]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/**'
+ workflow_dispatch:
+ pull_request:
+   types: [opened, reopened, synchronize]
+   paths:
+     - 'auth-service/**'
+     - '.github/workflows/**'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+ group: ${{ github.workflow }}-${{ github.ref }}
+ cancel-in-progress: true
 
 jobs:
-  build:
-    name: "Build"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+ build:
+   name: "Build"
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+     - name: Setup Go
+       uses: actions/setup-go@v5
+       with:
+        go-version-file: 'auth-service/go.mod'
+        check-latest: true
+        cache-dependency-path: |
+          auth-service/go.mod
+  
+     - uses: actions/cache@v4
+       with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/auth-service/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
 
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-            # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Check if cache hit
-        run: |
-          echo "Cache hit: ${{ steps.cache-npm.outputs.cache-hit }}"
-        
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
+     - name: Install dependencies
+       working-directory: auth-service
+       run: go get .
 
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm install
+     - name: Build
+       working-directory: auth-service
+       run: go build -v ./...
 
-      - name: Build
-        working-directory: frontend
-        run: npm run build
-      - name: List Directory Contents
-        run: ls -al frontend
+     - name: Test
+       working-directory: auth-service
+       run: go test -v ./...
+       

@@ -1,4 +1,4 @@
-name: "Merge - Angular"
+name: "Merge - Auth service"
 
 on:
   pull_request:
@@ -20,35 +20,58 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+ 
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          node-version: '20.x'
-      - name: Confirm Node.js version
-        run: node -v
-
-      - name: Cache node modules
-        id: cache-npm
+         go-version-file: 'auth-service/go.mod'
+         check-latest: true
+         cache-dependency-path: |
+           auth-service/go.mod
+   
+      - name: Cache go modules
         uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
         with:
-            # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
+         path: |
+           ~/.cache/go-build
+           ~/go/pkg/mod
+         key: ${{ runner.os }}-go-${{ hashFiles('**/auth-service/go.sum') }}
+         restore-keys: |
+           ${{ runner.os }}-go-
+ 
       - name: Install dependencies
-        working-directory: frontend
-        run: npm install
-
+        working-directory: auth-service
+        run: go get .
+ 
       - name: Build
-        working-directory: frontend
-        run: npm run build
+        working-directory: auth-service
+        run: go build -v ./...
+ 
+      - name: Test
+        working-directory: auth-service
+        run: go test -v ./...
+  
+  sonar-cloud:
+    needs: build
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download code coverage results
+        uses: actions/download-artifact@v4
+        with:
+          name: code-coverage-report
+          path: bin
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: auth-service
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   semantic-versioning: 
     if: github.event.pull_request.merged == true
@@ -74,26 +97,30 @@ jobs:
 
   push-to-registry:
     name: Push Docker image to Docker Hub
-    needs: [build, semantic-versioning]
+    needs: [semantic-versioning, sonar-cloud]
     runs-on: ubuntu-latest
   
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
+ 
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-            # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+         go-version-file: 'auth-service/go.mod'
+         check-latest: true
+         cache-dependency-path: |
+           auth-service/go.mod
+   
+      - name: Cache go modules
+        uses: actions/cache@v4
+        with:
+         path: |
+           ~/.cache/go-build
+           ~/go/pkg/mod
+         key: ${{ runner.os }}-go-${{ hashFiles('**/auth-service/go.sum') }}
+         restore-keys: |
+           ${{ runner.os }}-go-
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -108,4 +135,6 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:${{needs.semantic-versioning.outputs.image-tag}}
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:${{needs.semantic-versioning.outputs.image-tag}}
+            ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:latest
