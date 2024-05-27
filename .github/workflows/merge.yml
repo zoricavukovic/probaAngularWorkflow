@@ -24,10 +24,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-         go-version-file: 'go.mod'
+         go-version-file: 'auth-service/go.mod'
          check-latest: true
          cache-dependency-path: |
-          go.mod
+           auth-service/go.mod
    
       - name: Cache go modules
         uses: actions/cache@v4
@@ -35,20 +35,20 @@ jobs:
          path: |
            ~/.cache/go-build
            ~/go/pkg/mod
-         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+         key: ${{ runner.os }}-go-${{ hashFiles('**/auth-service/go.sum') }}
          restore-keys: |
            ${{ runner.os }}-go-
  
       - name: Install dependencies
-        
+        working-directory: auth-service
         run: go get .
  
       - name: Build
-        
+        working-directory: auth-service
         run: go build -v ./...
  
       - name: Test
-      
+        working-directory: auth-service
         run: go test -v ./...
   
   sonar-cloud:
@@ -62,16 +62,15 @@ jobs:
           fetch-depth: 0
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
-        # with:
-        #   projectBaseDir: auth-service
-        #   args: >
-        #     -Dsonar.organization=zoricavukovic
-        #     -Dsonar.projectKey=zoricavukovic_probaAngularWorkflow
-        #     -Dsonar.python.coverage.reportPaths=coverage.xml
-        #     -Dsonar.sources=.
-        #     -Dsonar.test.exclusions=**/tests/**
-        #     -Dsonar.tests=./tests/
-        #     -Dsonar.verbose=true
+        with:
+          projectBaseDir: auth-service
+          args: >
+            -Dsonar.organization=zoricavukovic
+            -Dsonar.projectKey=zoricavukovic_probaAngularWorkflow
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=.
+            -Dsonar.test.exclusions=**/tests/**
+            -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -110,10 +109,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-         go-version-file: 'go.mod'
+         go-version-file: 'auth-service/go.mod'
          check-latest: true
          cache-dependency-path: |
-           go.mod
+           auth-service/go.mod
    
       - name: Cache go modules
         uses: actions/cache@v4
@@ -121,7 +120,7 @@ jobs:
          path: |
            ~/.cache/go-build
            ~/go/pkg/mod
-         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+         key: ${{ runner.os }}-go-${{ hashFiles('**/auth-service/go.sum') }}
          restore-keys: |
            ${{ runner.os }}-go-
 
@@ -135,8 +134,8 @@ jobs:
         id: push
         uses: docker/build-push-action@v5
         with:
-          context: ./
-          file: ./Dockerfile
+          context: ./auth-service
+          file: ./auth-service/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:${{needs.semantic-versioning.outputs.image-tag}}
