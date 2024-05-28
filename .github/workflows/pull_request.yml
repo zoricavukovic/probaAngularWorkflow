@@ -27,7 +27,7 @@ jobs:
         cache-dependency-path: |
           auth-service/go.mod
      - name: Clear Go modules cache directory
-       run: sudo rm -rf ~/go/pkg/mod
+       run: sudo rm -rf ~/go/pkg/mod 
   
      - uses: actions/cache@v4
        with:
