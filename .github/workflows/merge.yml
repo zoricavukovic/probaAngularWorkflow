@@ -9,14 +9,7 @@ concurrency:
 jobs:
   push-to-registry:
     name: Push Docker image to Docker Hub
-  
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
   
     steps:
       - name: Checkout
@@ -57,15 +50,15 @@ jobs:
 
       - name: Create and use a new builder
         run: |
-          docker buildx create --use
-          docker buildx inspect --bootstrap
+          docker buildx create --name mybuilder --use
+          docker buildx inspect mybuilder --bootstrap
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
         with:
           context: ./auth-service
           file: ./auth-service/Dockerfile
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:latest
