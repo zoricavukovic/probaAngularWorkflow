@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+  
     name: "Build"
     runs-on: ubuntu-latest
     steps:
@@ -79,7 +79,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   semantic-versioning: 
-    if: github.event.pull_request.merged == true
+  
     name: Semantic Versioning
     runs-on: ubuntu-latest
     outputs:
