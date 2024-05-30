@@ -1,12 +1,6 @@
 name: "Merge - Auth service"
 
-on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
-      - develop
+on: [push]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -59,6 +53,12 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+
+      - name: Create and use a new builder
+        run: |
+          docker buildx create --use
+          docker buildx inspect --bootstrap
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
