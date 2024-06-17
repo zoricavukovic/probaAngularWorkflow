@@ -25,12 +25,13 @@ jobs:
     
       - name: Build and Push Docker image with Kaniko
         run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
             -v /kaniko/.docker/config.json:/kaniko/.docker/config.json \
             gcr.io/kaniko-project/executor:latest \
             --dockerfile /workspace/auth-service/Dockerfile \
             --context /workspace/auth-service \
-            --destination docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:1.12.2
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            --destination docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+      
           docker push docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
