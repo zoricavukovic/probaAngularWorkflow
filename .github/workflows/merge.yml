@@ -22,16 +22,30 @@ jobs:
         if: matrix.arch == 'arm64'
         run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-      - name: Kaniko build
+      - name: Kaniko build amd64
+        if: matrix.arch == 'linux/amd64'
         uses: aevea/action-kaniko@master
-        
         with:
-          image: ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}
+          image: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tag_with_latest: true
-          tag: 1.2.2
-          cache: true
+          tag: latest
           path: ./auth-service
-          cache_registry: aevea/cache
           build_file: Dockerfile
+          cache: true
+
+      - name: Kaniko build arm64
+        if: matrix.arch == 'linux/arm64'
+        uses: aevea/action-kaniko@master
+        with:
+          image: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tag: latest
+          path: ./auth-service
+          build_file: Dockerfile
+          cache: true
+
+      - name: Push manifest (combine architectures)
+        if: always()
+        run: docker manifest create ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest-amd64 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest-arm64 && docker manifest push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
