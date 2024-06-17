@@ -29,7 +29,7 @@ jobs:
           image: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tag: latest
+          tag: latest-amd64
           path: ./auth-service
           build_file: Dockerfile
           cache: true
@@ -41,7 +41,7 @@ jobs:
           image: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tag: latest
+          tag: latest-arm64
           path: ./auth-service
           build_file: Dockerfile
           cache: true
