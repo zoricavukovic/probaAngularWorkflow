@@ -1,64 +1,35 @@
-name: "Merge - Auth service"
+name: Build and Push Docker Image
 
-on: [push]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+on:
+  push:
+    branches:
+      - main # Replace with your target branch name
+      - develop
 
 jobs:
-  push-to-registry:
-    name: Push Docker image to Docker Hub
+  build-and-push:
     runs-on: ubuntu-latest
-  
+
+    strategy:
+      matrix:
+        arch: [linux/amd64, linux/arm64]
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
- 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-         go-version-file: 'auth-service/go.mod'
-         check-latest: true
-         cache-dependency-path: |
-           auth-service/go.mod
-      
-      - name: Clear Go modules cache directory
-        run: sudo rm -rf ~/go/pkg/mod
-   
-      - name: Cache go modules
-        uses: actions/cache@v4
-        with:
-         path: |
-           ~/.cache/go-build
-           ~/go/pkg/mod
-         key: ${{ runner.os }}-go-${{ hashFiles('**/auth-service/go.sum') }}
-         restore-keys: |
-           ${{ runner.os }}-go-
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up QEMU (for ARM64)
+        if: matrix.arch == 'arm64'
+        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-
-      - name: Create and use a new builder
-        run: |
-          docker buildx create --name mybuilder --use
-          docker buildx inspect mybuilder --bootstrap
-      - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@v5
+      - name: Kaniko build
+        uses: aevea/action-kaniko@master
         with:
-          context: ./auth-service
-          file: ./auth-service/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}:latest
+          image: ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          tag_with_latest: true
+          tag: 1.2.2
+          cache: true
+          cache_registry: ${{ secrets.DOCKER_USERNAME }}/cache
+          build_file: ./auth-service/Dockerfile
