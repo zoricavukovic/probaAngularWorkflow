@@ -26,8 +26,8 @@ jobs:
         uses: aevea/action-kaniko@master
         with:
           image: ${{ secrets.DOCKER_USERNAME }}/${{secrets.DOCKER_IMAGE_NAME}}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           tag_with_latest: true
           tag: 1.2.2
           cache: true
