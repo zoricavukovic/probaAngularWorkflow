@@ -33,8 +33,8 @@ jobs:
           path: ./auth-service
           build_file: Dockerfile
           cache: true
+          cache_registry: ${{ secrets.DOCKER_USERNAME }}/cache
           extra_args: |
-            --build-arg opts='GOARCH=arm64'
             --customPlatform=linux/arm64
           
  
