@@ -27,7 +27,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
+      - name: Set working directory to auth-service
+        run: cd auth-service
       - name: List workspace contents
         run: ls -R  
       - name: Kaniko build
@@ -40,4 +41,4 @@ jobs:
           tag: 1.2.2
           cache: true
           cache_registry: ${{ secrets.DOCKER_USERNAME }}/cache
-          build_file: ./auth-service/Dockerfile
+          build_file: /Dockerfile
