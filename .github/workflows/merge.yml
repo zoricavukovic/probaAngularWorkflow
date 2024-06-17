@@ -41,4 +41,3 @@ jobs:
           tag: 1.2.2
           cache: true
           cache_registry: ${{ secrets.DOCKER_USERNAME }}/cache
-          build_file: Dockerfile
