@@ -8,20 +8,13 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
-    strategy:
-      matrix:
-        arch: [linux/arm64]
+
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up QEMU (for ARM64)
-        uses: docker/setup-qemu-action@v2 # Use the official action for QEMU setup
-        with:
-          platforms: linux/arm64
 
       - name: Kaniko build amd64
         uses: aevea/action-kaniko@master
@@ -34,7 +27,6 @@ jobs:
           build_file: Dockerfile
           cache: true
           cache_registry: ${{ secrets.DOCKER_USERNAME }}/cache
-          extra_args: |
-            --custom-platform=linux/arm64
+          
           
  
