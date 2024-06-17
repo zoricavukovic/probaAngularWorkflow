@@ -34,6 +34,6 @@ jobs:
           build_file: Dockerfile
           cache: true
           extra_args: |
-            --customPlatform=linux/arm64
+            --build-arg opts='GOARCH=arm64'
           
  
