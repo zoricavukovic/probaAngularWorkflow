@@ -34,6 +34,6 @@ jobs:
           build_file: Dockerfile
           cache: true
           extra_args: |
-            --platform=linux/arm64
+            --customPlatform=linux/arm64
           
  
