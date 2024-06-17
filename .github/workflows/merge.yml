@@ -25,7 +25,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: zoricav
           password: ${{ secrets.DOCKER_PASSWORD }}
     
       - name: Build and Push Docker image with Kaniko
@@ -36,6 +36,6 @@ jobs:
             gcr.io/kaniko-project/executor:latest \
             --dockerfile /workspace/auth-service/Dockerfile \
             --context /workspace/auth-service \
-            --destination ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+            --destination zoricav/service2
       
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
+          docker push zoricav/service2
