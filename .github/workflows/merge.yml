@@ -25,11 +25,11 @@ jobs:
           image: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tag: latest
+          tag: 1.2
+          tag_with_latest: true
           path: ./auth-service
           build_file: Dockerfile
           cache: true
-          cache_registry: ${{ secrets.DOCKER_USERNAME }}/cache
           extra_args: |
             --custom-platform=linux/arm64
           
