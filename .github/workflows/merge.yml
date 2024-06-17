@@ -35,6 +35,6 @@ jobs:
           cache: true
           cache_registry: ${{ secrets.DOCKER_USERNAME }}/cache
           extra_args: |
-            --customPlatform=linux/arm64
+            --custom-platform=linux/arm64
           
  
