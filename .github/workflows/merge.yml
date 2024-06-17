@@ -10,9 +10,18 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        arch: [linux/arm64]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up QEMU (for ARM64)
+        uses: docker/setup-qemu-action@v2 # Use the official action for QEMU setup
+        with:
+          platforms: linux/arm64
 
       - name: Kaniko build amd64
         uses: aevea/action-kaniko@master
