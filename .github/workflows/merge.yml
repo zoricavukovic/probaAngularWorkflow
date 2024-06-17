@@ -31,6 +31,6 @@ jobs:
             gcr.io/kaniko-project/executor:latest \
             --dockerfile /workspace/auth-service/Dockerfile \
             --context /workspace/auth-service \
-            --destination docker.io/${{ secrets.DOCKER_USERNAME }}:1.12.2
+            --destination docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:1.12.2
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
