@@ -15,5 +15,5 @@ const (
 	Authorization             string = "Authorization"
 	ContentType               string = "Content-Type"
 	JsonContentType           string = "application/json"
-	nova                      string = "asd"
+	nova                      string = "asasad"
 )
