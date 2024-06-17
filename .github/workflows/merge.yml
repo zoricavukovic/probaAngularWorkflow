@@ -32,10 +32,9 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
-            -v /kaniko/.docker/config.json:/kaniko/.docker/config.json \
             gcr.io/kaniko-project/executor:latest \
             --dockerfile /workspace/auth-service/Dockerfile \
             --context /workspace/auth-service \
-            --destination zoricav/service2
+            --destination zoricav/service2:latest
       
-          docker push zoricav/service2
+          docker push zoricav/service2:latest
