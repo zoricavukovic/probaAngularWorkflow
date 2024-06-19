@@ -21,7 +21,7 @@ jobs:
           projectBaseDir: auth-service
           args: >
             -Dsonar.organization=zoricavukovic
-            -Dsonar.projectKey=probaAngularWorkflow
+            -Dsonar.projectKey=zoricavukovic_probaAngularWorkflow
             -Dsonar.sources=.
             -Dsonar.test.exclusions=**/tests/**
         env:
