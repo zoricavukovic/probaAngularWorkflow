@@ -22,8 +22,10 @@ jobs:
           args: >
             -Dsonar.organization=zoricavukovic
             -Dsonar.projectKey=zoricavukovic_probaAngularWorkflow
+            -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.sources=.
             -Dsonar.test.exclusions=**/tests/**
+            -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
